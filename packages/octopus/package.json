@@ -1,0 +1,19 @@
+{
+  "name": "octopus",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "dependencies": {
+    "@google/genai": "^1.31.0",
+    "db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "haxxka",
+  "scripts": {
+    "endpoint": "pnpm -F endpoint",
+    "db": "pnpm -F db",
+    "octopus": "pnpm -F octopus",
+    "fmt": "pnpm exec prettier ./packages --write"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "devDependencies": {
+    "prettier": "3.7.4"
+  }
+}

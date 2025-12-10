@@ -1,0 +1,20 @@
+{
+  "name": "db",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "push": "pnpm exec drizzle-kit push",
+    "studio": "pnpm exec drizzle-kit studio"
+  },
+  "packageManager": "pnpm@10.24.0",
+  "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.25",
+    "drizzle-kit": "^0.31.7",
+    "tsx": "^4.21.0"
+  }
+}
