@@ -6,7 +6,7 @@
     "octopus": "pnpm -F octopus",
     "fmt": "pnpm exec prettier ./packages --write"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.28.2",
   "devDependencies": {
     "prettier": "3.7.4"
   }
