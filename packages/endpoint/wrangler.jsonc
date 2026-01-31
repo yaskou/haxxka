@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "test",
+  "name": "haxxka",
   "main": "src/index.ts",
   "compatibility_date": "2026-01-31",
   // "compatibility_flags": [
