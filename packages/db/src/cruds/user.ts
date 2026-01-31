@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
-import { db } from "../db";
 import { usersTable } from "../schemas";
 import { UserCreate } from "./types";
+import { Client } from "../db";
 
-export const createUser = async (init: UserCreate) => {
+export const createUser = async (db: Client, init: UserCreate) => {
   await db.insert(usersTable).values(init);
 };
 
-export const readUser = async (id: string) => {
+export const readUser = async (db: Client, id: string) => {
   return await db.query.usersTable.findFirst({
     where: eq(usersTable.id, id),
   });

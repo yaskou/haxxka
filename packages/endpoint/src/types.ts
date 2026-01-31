@@ -1,25 +1,25 @@
-export interface Id {
+export type Id = {
   id: string;
-}
+};
 
-export interface Messaging {
+export type Messaging = {
   sender: Id;
   recipient: Id;
   timestamp: number;
   message: {
     mid: string;
-    text: string;
-    is_deleted: boolean;
+    text?: string;
+    is_deleted?: boolean;
   };
-}
+};
 
-export interface Entry {
+export type Entry = {
   time: number;
   id: string;
   messaging: Messaging[];
-}
+};
 
-export interface Payload {
+export type Payload = {
   object: "instagram";
   entry: Entry[];
-}
+};

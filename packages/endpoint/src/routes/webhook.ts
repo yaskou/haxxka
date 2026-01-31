@@ -1,6 +1,6 @@
-import { Hono } from "hono";
-import { Messaging, Payload } from "../types";
+import type { Payload } from "../types";
 import {
+  createClient,
   createInbox,
   createMessage,
   createUser,
@@ -8,54 +8,58 @@ import {
   deleteMessage,
   readUser,
 } from "db";
+import { createHono } from "../createHono";
 
-const createFn = async (messaging: Messaging) => {
-  const isbot = messaging.sender.id == process.env.MY_IG_ID;
-  const userId = isbot ? messaging.recipient.id : messaging.sender.id;
+const webhook = createHono();
 
-  const user = await readUser(userId);
-  if (!user) {
-    await createUser({
-      id: userId,
-    });
+webhook.get("/", async (c) => {
+  const challenge = c.req.query("hub.challenge");
+
+  const verifyToken = c.req.query("hub.verify_token");
+  if (verifyToken !== c.env.IG_VERIFY_TOKEN) {
+    c.text("NOT Match!");
   }
 
-  if (isbot) {
-    await createMessage([
-      {
+  return c.text(challenge);
+});
+
+webhook.post("/", async (c) => {
+  const payload = await c.req.json<Payload>().catch();
+
+  const db = createClient(c.env.TURSO_DATABASE_URL, c.env.TURSO_AUTH_TOKEN);
+
+  for (const messaging of payload.entry[0].messaging) {
+    if (messaging.message.is_deleted) {
+      await deleteMessage(db, messaging.message.mid);
+      await deleteInbox(db, messaging.message.mid);
+      return c.text("Message deleted");
+    }
+
+    const isbot = messaging.sender.id == c.env.MY_IG_ID;
+    const userId = isbot ? messaging.recipient.id : messaging.sender.id;
+
+    const user = await readUser(db, userId);
+    if (!user) {
+      await createUser(db, {
+        id: userId,
+      });
+    }
+
+    if (isbot) {
+      await createMessage(db, {
         id: messaging.message.mid,
         text: messaging.message.text,
         timestamp: messaging.timestamp,
         userId,
         isbot,
-      },
-    ]);
-    return;
-  }
-
-  await createInbox({
-    id: messaging.message.mid,
-    text: messaging.message.text,
-    timestamp: messaging.timestamp,
-    userId,
-  });
-};
-
-const deleteFn = async (messaging: Messaging) => {
-  await deleteMessage(messaging.message.mid);
-  await deleteInbox(messaging.message.mid);
-};
-
-const webhook = new Hono();
-
-webhook.post("/", async (c) => {
-  const payload = await c.req.json<Payload>().catch();
-
-  for (const messaging of payload.entry[0].messaging) {
-    if (messaging.message.is_deleted) {
-      deleteFn(messaging);
+      });
     } else {
-      createFn(messaging);
+      await createInbox(db, {
+        id: messaging.message.mid,
+        text: messaging.message.text,
+        timestamp: messaging.timestamp,
+        userId,
+      });
     }
   }
 

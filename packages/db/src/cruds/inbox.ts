@@ -1,20 +1,20 @@
 import { desc, eq } from "drizzle-orm";
-import { db } from "../db";
 import { inboxesTable } from "../schemas";
 import { InboxCreate } from "./types";
+import { Client } from "../db";
 
-export const createInbox = async (inbox: InboxCreate) => {
+export const createInbox = async (db: Client, inbox: InboxCreate) => {
   await db.insert(inboxesTable).values(inbox);
 };
 
-export const readInboxesByUserId = async (userId: string) => {
+export const readInboxesByUserId = async (db: Client, userId: string) => {
   return await db.query.inboxesTable.findMany({
     orderBy: [desc(inboxesTable.timestamp)],
     where: eq(inboxesTable.userId, userId),
   });
 };
 
-export const readUnreplyUserIds = async () => {
+export const readUnreplyUserIds = async (db: Client) => {
   return await db
     .selectDistinct({
       id: inboxesTable.userId,
@@ -22,10 +22,10 @@ export const readUnreplyUserIds = async () => {
     .from(inboxesTable);
 };
 
-export const deleteInbox = async (id: string) => {
+export const deleteInbox = async (db: Client, id: string) => {
   await db.delete(inboxesTable).where(eq(inboxesTable.id, id));
 };
 
-export const deleteInboxesByUserId = async (userId: string) => {
+export const deleteInboxesByUserId = async (db: Client, userId: string) => {
   await db.delete(inboxesTable).where(eq(inboxesTable.userId, userId));
 };

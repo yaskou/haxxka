@@ -1,13 +1,13 @@
 import { desc, eq } from "drizzle-orm";
-import { db } from "../db";
 import { messagesTable } from "../schemas/message";
 import { MessageCreate } from "./types";
+import type { Client } from "../db";
 
-export const createMessage = async (messages: MessageCreate[]) => {
+export const createMessage = async (db: Client, messages: MessageCreate) => {
   await db.insert(messagesTable).values(messages);
 };
 
-export const readMessages = async (userId: string, limit = 1) => {
+export const readMessages = async (db: Client, userId: string, limit = 1) => {
   return await db.query.messagesTable.findMany({
     limit,
     orderBy: [desc(messagesTable.timestamp)],
@@ -15,6 +15,6 @@ export const readMessages = async (userId: string, limit = 1) => {
   });
 };
 
-export const deleteMessage = async (userId: string) => {
+export const deleteMessage = async (db: Client, userId: string) => {
   await db.delete(messagesTable).where(eq(messagesTable.id, userId));
 };

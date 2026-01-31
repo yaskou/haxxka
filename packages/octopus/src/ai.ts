@@ -1,11 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
-import { readInboxesByUserId, readMessages } from "db";
+import { Client, readInboxesByUserId, readMessages } from "db";
 import { History } from "./types";
 
 const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); // No Credits, No Stress
 
-const createHistory = async (userId: string, r = 10) => {
-  const messages = await readMessages(userId, r);
+const createHistory = async (db: Client, userId: string, r = 10) => {
+  const messages = await readMessages(db, userId, r);
   const history = messages.reduce<History[]>((prev, current) => {
     const role = current.isbot ? "model" : "user";
     const lastIndex = prev.length - 1;
@@ -23,8 +23,8 @@ const createHistory = async (userId: string, r = 10) => {
   return history;
 };
 
-const createText = async (userId: string) => {
-  const inboxes = await readInboxesByUserId(userId);
+const createText = async (db: Client, userId: string) => {
+  const inboxes = await readInboxesByUserId(db, userId);
 
   const text = inboxes.reduce((prev, current) => {
     return (prev ? "\n" : "") + current.text;
@@ -33,9 +33,9 @@ const createText = async (userId: string) => {
   return text;
 };
 
-export const createReply = async (userId: string) => {
-  const history = await createHistory(userId);
-  const text = await createText(userId);
+export const createReply = async (db: Client, userId: string) => {
+  const history = await createHistory(db, userId);
+  const text = await createText(db, userId);
 
   const chat = gemini.chats.create({
     model: "gemini-2.5-flash-lite",

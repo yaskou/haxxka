@@ -1,10 +1,16 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/libsql";
-import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql/web";
+import { createClient as createLibsqlClient } from "@libsql/client/web";
 import * as schema from "./schemas";
 
-const client = createClient({
-  url: process.env.DB_FILE_NAME,
-});
+export type Client = ReturnType<typeof createClient>;
 
-export const db = drizzle(client, { schema });
+export const createClient = (url: string, authToken?: string) => {
+  const client = createLibsqlClient({
+    authToken,
+    url,
+  });
+
+  const db = drizzle(client, { schema });
+
+  return db;
+};
