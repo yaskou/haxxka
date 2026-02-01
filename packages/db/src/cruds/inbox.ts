@@ -1,7 +1,8 @@
 import { eq, inArray } from "drizzle-orm";
 import { inboxesTable } from "../schemas";
-import { InboxCreate } from "./types";
 import { Client } from "../db";
+
+export type InboxCreate = typeof inboxesTable.$inferInsert;
 
 export const createInbox = async (db: Client, inbox: InboxCreate) => {
   await db.insert(inboxesTable).values(inbox);

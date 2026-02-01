@@ -1,7 +1,10 @@
 import { eq } from "drizzle-orm";
 import { messagesTable } from "../schemas/message";
-import { MessageCreate } from "./types";
 import type { Client } from "../db";
+
+export type MessageCreate =
+  | typeof messagesTable.$inferInsert
+  | (typeof messagesTable.$inferInsert)[];
 
 export const createMessage = async (db: Client, messages: MessageCreate) => {
   await db

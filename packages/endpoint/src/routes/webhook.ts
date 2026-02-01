@@ -1,4 +1,3 @@
-import type { Payload } from "../types";
 import {
   createClient,
   createInbox,
@@ -9,6 +8,30 @@ import {
   readUser,
 } from "db";
 import { createHono } from "../createHono";
+
+type Id = {
+  id: string;
+};
+
+type Messaging = {
+  sender: Id;
+  recipient: Id;
+  timestamp: number;
+  message: {
+    mid: string;
+    text?: string;
+    is_deleted?: boolean;
+  };
+};
+
+type Payload = {
+  object: "instagram";
+  entry: {
+    time: number;
+    id: string;
+    messaging: Messaging[];
+  }[];
+};
 
 const webhook = createHono();
 

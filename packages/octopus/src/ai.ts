@@ -4,7 +4,11 @@ import type {
   ChatStreamingResponseChunkData,
   Message,
 } from "@openrouter/sdk/models";
-import type { MessagesByUnreplyUser } from "db";
+import type { readMessagesByUnreplyUser } from "db";
+
+type MessagesByUnreplyUser = Awaited<
+  ReturnType<typeof readMessagesByUnreplyUser>
+>[number];
 
 export class Haxxka {
   private openRouter: OpenRouter;

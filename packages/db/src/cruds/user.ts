@@ -1,7 +1,8 @@
 import { eq } from "drizzle-orm";
 import { inboxesTable, usersTable } from "../schemas";
-import type { UserCreate } from "./types";
 import type { Client } from "../db";
+
+export type UserCreate = typeof usersTable.$inferInsert;
 
 export const createUser = async (db: Client, init: UserCreate) => {
   await db.insert(usersTable).values(init);
