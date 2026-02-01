@@ -1,20 +1,18 @@
-import { GoogleGenAI } from "@google/genai";
+import { OpenRouter } from "@openrouter/sdk";
 import { Client, readInboxesByUserId, readMessages } from "db";
-import { History } from "./types";
-
-const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }); // No Credits, No Stress
+import type { Message } from "@openrouter/sdk/models";
 
 const createHistory = async (db: Client, userId: string, r = 10) => {
   const messages = await readMessages(db, userId, r);
-  const history = messages.reduce<History[]>((prev, current) => {
-    const role = current.isbot ? "model" : "user";
+  const history = messages.reduce<Message[]>((prev, current) => {
+    const role = current.isbot ? "assistant" : "user";
     const lastIndex = prev.length - 1;
     if (lastIndex >= 0 && prev[lastIndex].role === role) {
-      prev[lastIndex].parts[0].text += "\n" + current.text;
+      prev[lastIndex].content += "\n" + current.text;
     } else {
       prev.push({
         role,
-        parts: [{ text: current.text }],
+        content: current.text,
       });
     }
     return prev;
@@ -33,25 +31,51 @@ const createText = async (db: Client, userId: string) => {
   return text;
 };
 
-export const createReply = async (db: Client, userId: string) => {
+export const createReply = async (
+  db: Client,
+  apiKey: string,
+  model: string,
+  userId: string,
+) => {
   const history = await createHistory(db, userId);
   const text = await createText(db, userId);
 
-  const chat = gemini.chats.create({
-    model: "gemini-2.5-flash-lite",
-    history,
+  const openRouter = new OpenRouter({
+    apiKey,
   });
 
-  const response = await chat.sendMessage({
-    message: text,
-    config: {
-      thinkingConfig: {
-        thinkingBudget: 0, // Disables thinking
+  const stream = await openRouter.chat.send({
+    model,
+    messages: [
+      {
+        role: "system",
+        content:
+          "あなたは、はるかという名前の女子高生です。句読点と敬語を使わずとても短い文で答えて。",
       },
-      systemInstruction:
-        "あなたの名前ははるか 女子高生のように短文で句読点なしで回答",
+      ...history,
+      { role: "user", content: text },
+    ],
+    reasoning: {
+      effort: "high",
     },
+    stream: true,
   });
 
-  return response.text;
+  console.log(`\n${userId}: ${text}`);
+
+  let reply = "";
+  for await (const chunk of stream) {
+    const reasoning = chunk.choices?.[0]?.delta?.reasoning;
+    const content = chunk.choices?.[0]?.delta.content;
+
+    if (reasoning) {
+      process.stdout.write(reasoning);
+    }
+    if (content) {
+      reply += content;
+      process.stdout.write(content);
+    }
+  }
+
+  return reply;
 };

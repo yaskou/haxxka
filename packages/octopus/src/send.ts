@@ -1,4 +1,8 @@
-export const sendDM = async (userId: string, reply: string) => {
+export const sendDM = async (
+  igToken: string,
+  userId: string,
+  reply: string,
+) => {
   const endpoint = "https://graph.instagram.com/v24.0/me/messages";
   const body = {
     recipient: {
@@ -10,7 +14,7 @@ export const sendDM = async (userId: string, reply: string) => {
   };
   const init = {
     headers: {
-      Authorization: "Bearer " + process.env.IG_TOKEN,
+      Authorization: "Bearer " + igToken,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),

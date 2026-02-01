@@ -8,8 +8,9 @@
   },
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
-    "@google/genai": "^1.31.0",
-    "db": "workspace:*"
+    "@openrouter/sdk": "^0.5.1",
+    "db": "workspace:*",
+    "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

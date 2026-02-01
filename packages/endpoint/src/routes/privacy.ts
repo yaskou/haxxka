@@ -22,7 +22,7 @@ privacy.get("/", (c) => {
       <h2>
         <li>生成AI使用について</li>
       </h2>
-      <p>応答用にGoogle Gemini 2.5 Flash Liteを使用しています</p>
+      <p>応答用に生成AIを使用しています</p>
       <h2>
         <li>ポリシーの改定について</li>
       </h2>

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { wait } from "./utils";
 import { createReply } from "./ai";
 import { sendDM } from "./send";
@@ -12,17 +13,29 @@ import {
 const main = async () => {
   const sleep_time_ms = 30 * 1000; // 30s
 
-  const db = createClient(
-    process.env.TURSO_DATABASE_URL!,
-    process.env.TURSO_AUTH_URL,
-  );
-
   while (true) {
+    const db = createClient(
+      process.env.TURSO_DATABASE_URL!,
+      process.env.TURSO_AUTH_TOKEN,
+    );
+
     const users = await readUnreplyUserIds(db);
 
     for (const user of users) {
-      const reply = await createReply(db, user.id);
-      await sendDM(user.id, reply);
+      const reply = await createReply(
+        db,
+        process.env.OPENROUTER_API_KEY,
+        process.env.OPENROUTER_MODEL,
+        user.id,
+      );
+
+      if (!reply) {
+        // 返信が生成できなかったら抜ける
+        console.log("ERROR: NO REPLY is available!");
+        break;
+      }
+
+      await sendDM(process.env.IG_TOKEN, user.id, reply);
 
       const inboxes = await readInboxesByUserId(db, user.id);
       await createMessage(
