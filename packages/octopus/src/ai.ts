@@ -1,14 +1,10 @@
 import { OpenRouter } from "@openrouter/sdk";
 import { EventStream } from "@openrouter/sdk/lib/event-streams.js";
-import { readMessagesByUnreplyUser } from "db";
 import type {
   ChatStreamingResponseChunkData,
   Message,
 } from "@openrouter/sdk/models";
-
-type MessagesByUnreplyUser = Awaited<
-  ReturnType<typeof readMessagesByUnreplyUser>
->[0];
+import type { MessagesByUnreplyUser } from "db";
 
 export class Haxxka {
   private openRouter: OpenRouter;
@@ -63,27 +59,30 @@ export class Haxxka {
   }
 
   makeInputs(messages: MessagesByUnreplyUser) {
-    const inputs = messages.messages.reduce<Message[]>((prev, current) => {
+    const mergedMessages = [
+      ...messages.messages,
+      ...messages.inboxes.map((inbox) => ({
+        isbot: false,
+        ...inbox,
+      })),
+    ];
+
+    const inputs = mergedMessages.reduce<Message[]>((prev, current) => {
       const role = current.isbot ? "assistant" : "user";
-      const lastIndex = prev.length - 1;
-      if (lastIndex >= 0 && prev[lastIndex].role === role) {
-        prev[lastIndex].content += "\n" + current.text;
-      } else {
-        prev.push({
-          role,
-          content: current.text,
-        });
+
+      const last = prev.at(-1);
+      if (last?.role === role) {
+        last.content += "\n" + current.text;
+        return prev;
       }
+
+      prev.push({
+        role,
+        content: current.text,
+      });
+
       return prev;
     }, []);
-
-    inputs.push({
-      role: "user",
-      content: messages.inboxes.reduce(
-        (prev, current) => prev + (prev ? "\n" : "") + current.text,
-        "",
-      ),
-    });
 
     return inputs;
   }

@@ -1,4 +1,5 @@
 import type { inboxesTable, messagesTable, usersTable } from "../schemas";
+import type { readMessagesByUnreplyUser } from "./user";
 
 // inbox table
 export type InboxCreate = typeof inboxesTable.$inferInsert;
@@ -10,3 +11,7 @@ export type MessageCreate =
 
 // user table
 export type UserCreate = typeof usersTable.$inferInsert;
+export type MessagesByUnreplyUsers = Awaited<
+  ReturnType<typeof readMessagesByUnreplyUser>
+>;
+export type MessagesByUnreplyUser = MessagesByUnreplyUsers[number];
