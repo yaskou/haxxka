@@ -4,7 +4,9 @@ import { MessageCreate } from "./types";
 import type { Client } from "../db";
 
 export const createMessage = async (db: Client, messages: MessageCreate) => {
-  await db.insert(messagesTable).values(messages);
+  await db
+    .insert(messagesTable)
+    .values(Array.isArray(messages) ? messages : [messages]);
 };
 
 export const readMessages = async (db: Client, userId: string, limit = 1) => {
