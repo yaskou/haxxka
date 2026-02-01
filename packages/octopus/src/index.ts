@@ -31,7 +31,6 @@ const main = async () => {
 
       if (!reply) {
         // 返信が生成できなかったら抜ける
-        console.log("ERROR: NO REPLY is available!");
         break;
       }
 

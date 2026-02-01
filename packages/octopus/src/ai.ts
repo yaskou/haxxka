@@ -1,6 +1,10 @@
 import { OpenRouter } from "@openrouter/sdk";
-import type { Message } from "@openrouter/sdk/models";
+import { EventStream } from "@openrouter/sdk/lib/event-streams.js";
 import { readMessagesByUnreplyUser } from "db";
+import type {
+  ChatStreamingResponseChunkData,
+  Message,
+} from "@openrouter/sdk/models";
 
 type MessagesByUnreplyUser = Awaited<
   ReturnType<typeof readMessagesByUnreplyUser>
@@ -16,21 +20,27 @@ export class Haxxka {
   }
 
   async createReply(inputs: Message[], model: string) {
-    const stream = await this.openRouter.chat.send({
-      model,
-      messages: [
-        {
-          role: "system",
-          content:
-            "あなたは、はるかという名前の女子高生です。敬語を使わずとても短い文で答えて。",
+    let stream: EventStream<ChatStreamingResponseChunkData>;
+    try {
+      stream = await this.openRouter.chat.send({
+        model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "あなたは、はるかという名前の女子高生です。敬語を使わずとても短い文で答えて。",
+          },
+          ...inputs,
+        ],
+        reasoning: {
+          effort: "high",
         },
-        ...inputs,
-      ],
-      reasoning: {
-        effort: "high",
-      },
-      stream: true,
-    });
+        stream: true,
+      });
+    } catch {
+      console.log("ERROR: NO REPLY is available!");
+      return null;
+    }
 
     console.log("\nThinking:");
 
