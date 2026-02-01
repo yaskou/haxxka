@@ -1,11 +1,11 @@
-import { int, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { usersTable } from "./user";
 import { relations } from "drizzle-orm";
 
 export const messagesTable = sqliteTable(
   "messages",
   {
-    id: text(),
+    id: text().primaryKey(),
 
     text: text().notNull(),
     timestamp: int().default(Date.now()),
@@ -14,7 +14,7 @@ export const messagesTable = sqliteTable(
     // relations
     userId: text("user_id").references(() => usersTable.id),
   },
-  (table) => [primaryKey({ columns: [table.id, table.userId] })],
+  (table) => [index("messages_user_id_idx").on(table.userId)],
 );
 
 export const messagesRelations = relations(messagesTable, ({ one }) => ({
