@@ -77,7 +77,7 @@ webhook.post("/", async (c) => {
     if (messaging.message.is_deleted) {
       await deleteMessage(db, messaging.message.mid);
       await deleteInbox(db, messaging.message.mid);
-      return c.text("Message deleted");
+      continue;
     }
 
     const isbot = messaging.sender.id == c.env.MY_IG_ID;
