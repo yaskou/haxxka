@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from "crypto";
 import {
   createClient,
   createInbox,
@@ -47,6 +48,27 @@ webhook.get("/", async (c) => {
 });
 
 webhook.post("/", async (c) => {
+  const signature = c.req.header("X-Hub-Signature-256");
+
+  if (!signature) {
+    return c.text("Missing signature!", 403);
+  }
+
+  const rawBody = await c.req.text();
+  const hash = createHmac("sha256", c.env.IG_APP_SECRET)
+    .update(rawBody)
+    .digest("hex");
+  const expected = "sha256=" + hash;
+
+  // タイミング攻撃対策
+  const isValid =
+    signature.length === expected.length &&
+    timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+
+  if (!isValid) {
+    return c.text("Invalid signature!", 403);
+  }
+
   const payload = await c.req.json<Payload>().catch();
 
   const db = createClient(c.env.TURSO_DATABASE_URL, c.env.TURSO_AUTH_TOKEN);
