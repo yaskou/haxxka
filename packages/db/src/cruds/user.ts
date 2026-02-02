@@ -15,7 +15,7 @@ export const readUser = async (db: Client, id: string) => {
 };
 
 export const readMessagesByUnreplyUser = async (db: Client) => {
-  const limit = 10;
+  const limit = 20;
 
   return await db.query.usersTable.findMany({
     where: (users, { eq, exists }) =>
@@ -26,6 +26,7 @@ export const readMessagesByUnreplyUser = async (db: Client) => {
       inboxes: true,
       messages: {
         limit,
+        orderBy: (messages, { desc }) => [desc(messages.timestamp)],
       },
     },
   });

@@ -63,6 +63,8 @@ export class Haxxka {
   }
 
   makeInputs(messages: MessagesByUnreplyUser) {
+    messages.messages.reverse(); // messagesはtimestampで降順
+
     const mergedMessages = [
       ...messages.messages,
       ...messages.inboxes.map((inbox) => ({
