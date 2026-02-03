@@ -41,7 +41,7 @@ webhook.get("/", async (c) => {
 
   const verifyToken = c.req.query("hub.verify_token");
   if (verifyToken !== c.env.IG_VERIFY_TOKEN) {
-    c.text("NOT Match!");
+    return c.text("Invalid verify token!", 403);
   }
 
   return c.text(challenge);
