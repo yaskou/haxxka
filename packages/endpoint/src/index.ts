@@ -1,7 +1,7 @@
-import { createHono } from "./createHono.ts";
-import { index } from "./routes/index.ts";
-import { privacy } from "./routes/privacy.ts";
-import { webhook } from "./routes/webhook.ts";
+import { createHono } from "./createHono";
+import { index } from "./routes/index";
+import { privacy } from "./routes/privacy";
+import { webhook } from "./routes/webhook";
 
 const app = createHono();
 app.route("/", index);

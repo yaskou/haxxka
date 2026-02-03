@@ -38,6 +38,9 @@ const webhook = createHono();
 
 webhook.get("/", async (c) => {
   const challenge = c.req.query("hub.challenge");
+  if (!challenge) {
+    return c.text("Missing verify token!", 403);
+  }
 
   const verifyToken = c.req.query("hub.verify_token");
   if (verifyToken !== c.env.IG_VERIFY_TOKEN) {
@@ -74,6 +77,8 @@ webhook.post("/", async (c) => {
   const db = createClient(c.env.TURSO_DATABASE_URL, c.env.TURSO_AUTH_TOKEN);
 
   for (const messaging of payload.entry[0].messaging) {
+    if (!messaging.message.text) continue;
+
     if (messaging.message.is_deleted) {
       await deleteMessage(db, messaging.message.mid);
       await deleteInbox(db, messaging.message.mid);
