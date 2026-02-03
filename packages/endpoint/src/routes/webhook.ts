@@ -77,13 +77,13 @@ webhook.post("/", async (c) => {
   const db = createClient(c.env.TURSO_DATABASE_URL, c.env.TURSO_AUTH_TOKEN);
 
   for (const messaging of payload.entry[0].messaging) {
-    if (!messaging.message.text) continue;
-
     if (messaging.message.is_deleted) {
       await deleteMessage(db, messaging.message.mid);
       await deleteInbox(db, messaging.message.mid);
       continue;
     }
+
+    if (!messaging.message.text) continue;
 
     const isbot = messaging.sender.id == c.env.MY_IG_ID;
     const userId = isbot ? messaging.recipient.id : messaging.sender.id;
