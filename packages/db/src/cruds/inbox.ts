@@ -1,6 +1,6 @@
 import { eq, inArray } from "drizzle-orm";
-import { inboxesTable } from "../schemas";
-import { Client } from "../db";
+import { inboxesTable } from "../schemas/index.js";
+import { Client } from "../db.js";
 
 export type InboxCreate = typeof inboxesTable.$inferInsert;
 

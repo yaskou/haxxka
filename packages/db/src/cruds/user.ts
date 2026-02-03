@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { inboxesTable, usersTable } from "../schemas";
-import type { Client } from "../db";
+import { inboxesTable, usersTable } from "../schemas/index.js";
+import type { Client } from "../db.js";
 
 export type UserCreate = typeof usersTable.$inferInsert;
 

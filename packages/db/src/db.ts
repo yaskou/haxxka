@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/libsql/web";
 import { createClient as createLibsqlClient } from "@libsql/client/web";
-import * as schema from "./schemas";
+import * as schema from "./schemas/index.js";
 
 export type Client = ReturnType<typeof createClient>;
 

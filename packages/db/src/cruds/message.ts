@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { messagesTable } from "../schemas/message";
-import type { Client } from "../db";
+import { messagesTable } from "../schemas/message.js";
+import type { Client } from "../db.js";
 
 export type MessageCreate =
   | typeof messagesTable.$inferInsert

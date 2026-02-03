@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { messagesTable } from "./message";
-import { inboxesTable } from "./inbox";
+import { messagesTable } from "./message.js";
+import { inboxesTable } from "./inbox.js";
 
 export const usersTable = sqliteTable("users", {
   id: text().primaryKey(),

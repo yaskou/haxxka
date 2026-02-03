@@ -1,2 +1,2 @@
-export * from "./cruds";
-export * from "./db";
+export * from "./cruds/index.js";
+export * from "./db.js";

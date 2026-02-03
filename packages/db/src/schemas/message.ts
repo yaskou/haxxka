@@ -1,6 +1,6 @@
 import { index, int, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { usersTable } from "./user";
 import { relations } from "drizzle-orm";
+import { usersTable } from "./user.js";
 
 export const messagesTable = sqliteTable(
   "messages",
